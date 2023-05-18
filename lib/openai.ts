@@ -4,6 +4,8 @@ import {
     ReconnectInterval,
   } from "eventsource-parser";
 
+  import { env } from "~/env.mjs";
+
   export interface ChatGPTMessage {
     role: string;
     content: string;
@@ -27,7 +29,7 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.OPENAI_API_KEY ?? ""}`
+                "Authorization": `Bearer ${env.OPENAI_API_KEY ?? ""}`
             },
             body: JSON.stringify(payload)
         })
