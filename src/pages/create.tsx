@@ -1,7 +1,8 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import {FC, useState, useRef, ChangeEvent } from "react";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { ReactMarkdown} from "react-markdown/lib/react-markdown";
+import { ReactMarkdownProps } from "react-markdown/lib/ast-to-react";
 import { promptOptions } from "lib/openai";
 
 interface SelectProps {
@@ -22,7 +23,7 @@ const SettingSelection: FC<SelectProps> = ({title, value, options, onChange }) =
             <select
             value={value}
             onChange={handleChange}
-            className="select select-sm"
+            className="select select-sm max-w-xs w-48"
             >
                 {options.map((label, index) => (
                 <option key={index} value={index}>
@@ -35,6 +36,11 @@ const SettingSelection: FC<SelectProps> = ({title, value, options, onChange }) =
       
     );
   }
+
+const mdRenderers = {
+  h1: ({node, ...props}: ReactMarkdownProps) => <h1 className={"text-2xl font-bold text-center text-slate-600"} {...props} />,
+  h2: ({node, ...props}: ReactMarkdownProps) => <h1 className={"text-lg font-bold text-slate-600"} {...props} />,
+}
 
 const CreateStory: NextPage = () => {
   const [text, setText] = useState("");
@@ -97,47 +103,51 @@ const CreateStory: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen min-w-full flex-col items-center justify-center gap-5 bg-gradient-to-b from-[#ffffff] to-[#f3f3f3]">
-        <div className="container h-24"></div>
-        <div className="container flex flex-col items-center justify-center gap-12 ">
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-600">
-            Skapa en ny Story
-          </h1>
-          <textarea
-            className="textarea textarea-lg h-48 w-11/12"
-            placeholder="Till exempel, 'En get som lever på en båt'"
-            cols={30}
-            rows={10}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-          <button className="btn" onClick={(e) => renderStory(e)}>
-            {" "}
-            Generera
-          </button>
-        </div>
-        <div className="items-left container flex h-60 w-10/12 flex-col gap-4">
-          <h2 className="text-2xl font-extrabold text-slate-600">
-            {" "}
-            Inställningar{" "}
-          </h2>
-          <SettingSelection title="Berättelsetyp" value={storyType} onChange={setStoryType} options={promptOptions.storyTypes.map((item) => item.type)}/>
-          <SettingSelection title="Läsarens ålder" value={readerAge} onChange={setReaderAge} options={promptOptions.readerAges}/>
-          <div className="">
-            {failedStory && (
-              <p className="font-bold text-red-800">
+        <div className="h-8 flex"> </div>
+        <div className="flex-col lg:flex-row flex w-full items-center p-6 gap-5">
+          <div className="w-full flex flex-col flex-1 gap-5 lg:min-h-screen">
+            <div className="flex flex-col items-center justify-center gap-8">
+              <h1 className="text-4xl font-extrabold tracking-tight text-slate-600">
+                Skapa
+              </h1>
+              <textarea
+                className="textarea textarea-lg h-48 focus:outline-none w-full border-4 rounded-lg border-gray-200"
+                placeholder="Till exempel, 'En get som lever på en båt'"
+                cols={30}
+                rows={10}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              />
+              <button className="btn" onClick={(e) => renderStory(e)}>
                 {" "}
-                Misslyckades - Försök igen om ett par minuter.
-              </p>
-            )}
+                Generera
+              </button>
+            </div>
+          <div className="items-left container flex h-60 w-10/12 flex-col gap-4">
+            <h2 className="text-2xl font-extrabold text-slate-600">
+              {" "}
+              Inställningar{" "}
+            </h2>
+            <SettingSelection title="Berättelsetyp" value={storyType} onChange={setStoryType} options={promptOptions.storyTypes.map((item) => item.type)}/>
+            <SettingSelection title="Läsarens ålder" value={readerAge} onChange={setReaderAge} options={promptOptions.readerAges}/>
+            <div className="">
+              {failedStory && (
+                <p className="font-bold text-red-800">
+                  {" "}
+                  Misslyckades - Försök igen om ett par minuter.
+                </p>
+              )}
+            </div>
+          </div>
+          </div>
+          <div  ref={storyRef} className="flex flex-1 flex-col gap-8 items-center justify-center w-full lg:w-48 container h-screen">
+              <h2 className="text-4xl font-extrabold text-slate-600">Story</h2>
+              <div  className="mb-4 flex-grow bg-white border-4 p-5 w-full rounded-lg overflow-auto">
+                  {story == "" && <p className="opacity-50 text-lg"> Här skapas din personliga story... </p> }
+                  <ReactMarkdown className="flex flex-col gap-5 text-slate-600" components={mdRenderers} children={story}/>
+              </div>
           </div>
         </div>
-        <div ref={storyRef} className="flex flex-col gap-8 items-center w-11/12 container h-screen">
-            <h2 className="mt-4 text-3xl font-extrabold text-slate-600">Story</h2>
-            <div  className="mb-4 flex-grow bg-white border-4 p-3 w-full rounded-lg overflow-auto">
-                <ReactMarkdown children={story}/>
-            </div>
-        </div>
-        
       </main>
     </>
   );
