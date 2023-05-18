@@ -1,12 +1,45 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState, useRef } from "react";
+import {FC, useState, useRef, ChangeEvent } from "react";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { promptOptions } from "lib/openai";
+
+interface SelectProps {
+    title: string
+    value: number
+    options: string[]
+    onChange: (value: number) => void
+}
+
+const SettingSelection: FC<SelectProps> = ({title, value, options, onChange }) => {
+    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        onChange(Number(e.target.value));
+    };
+  
+    return (
+        <div className="flex flex-col">
+            <span className="font-bold text-slate-600"> {title} </span>
+            <select
+            value={value}
+            onChange={handleChange}
+            className="select select-sm"
+            >
+                {options.map((label, index) => (
+                <option key={index} value={index}>
+                    {label}
+                </option>
+                ))}
+            </select>
+
+        </div>
+      
+    );
+  }
 
 const CreateStory: NextPage = () => {
   const [text, setText] = useState("");
-  const [storyType, setStoryType] = useState("Godnattsaga");
-  const [readerAge, setReaderAge] = useState("6-8 år");
+  const [storyType, setStoryType] = useState(0);
+  const [readerAge, setReaderAge] = useState(5);
   const [story, setStory] = useState("");
   const [failedStory, setFailedStory] = useState(false);
   const storyRef = useRef<HTMLDivElement>(null)
@@ -16,18 +49,6 @@ const CreateStory: NextPage = () => {
         storyRef.current.scrollIntoView({behavior: "smooth"});
     }
   }
-
-  const updateStoryType = (type: string) => {
-    setStoryType(type);
-  };
-
-  const updateReaderAge = (slot: string) => {
-    setReaderAge(slot);
-  };
-
-  const updateText = (text: string) => {
-    setText(text);
-  };
 
   const renderStory = async (e: any) => {
     e.preventDefault();
@@ -83,12 +104,10 @@ const CreateStory: NextPage = () => {
           <textarea
             className="textarea textarea-lg h-48 w-11/12"
             placeholder="Till exempel, 'En get som lever på en båt'"
-            name=""
-            id=""
             cols={30}
             rows={10}
             value={text}
-            onChange={(e) => updateText(e.target.value)}
+            onChange={(e) => setText(e.target.value)}
           />
           <button className="btn" onClick={(e) => renderStory(e)}>
             {" "}
@@ -100,43 +119,8 @@ const CreateStory: NextPage = () => {
             {" "}
             Inställningar{" "}
           </h2>
-          <div className="flex flex-col">
-            <span className="font-bold text-slate-600"> Berättelsetyp </span>
-            <select
-              value={storyType}
-              onChange={(e) => updateStoryType(e.target.value)}
-              className="select select-sm"
-              name=""
-              id=""
-            >
-              <option value={"Godnattsaga"}>Godnattsaga</option>
-              <option value={"Äventyr"}>Äventyr</option>
-              <option value={"Pedagogisk"}>Pedagogisk</option>
-              <option value={"Däckare"}>Däckare</option>
-              <option value={"Science fiction"}>Science fiction</option>
-              <option value={"Realistisk fiction"}>Realistisk fiction</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-slate-600"> Läsarens ålder </span>
-            <select
-              value={readerAge}
-              onChange={(e) => updateReaderAge(e.target.value)}
-              className="select select-sm"
-              name=""
-              id=""
-            >
-              <option value={"1-2 år"}>1-2 år</option>
-              <option value={"2-3 år"}>2-3 år</option>
-              <option value={"3-4 år"}>3-4 år</option>
-              <option value={"4-6 år"}>4-6 år</option>
-              <option value={"6-8 år"}>6-8 år</option>
-              <option value={"8-10 år"}>8-10 år</option>
-              <option value={"10-12 år"}>10-12 år</option>
-              <option value={"12+ år"}>12+ år</option>
-              <option value={"Vuxen"}>Jag är faktiskt vuxen!!</option>
-            </select>
-          </div>
+          <SettingSelection title="Berättelsetyp" value={storyType} onChange={setStoryType} options={promptOptions.storyTypes.map((item) => item.type)}/>
+          <SettingSelection title="Läsarens ålder" value={readerAge} onChange={setReaderAge} options={promptOptions.readerAges}/>
           <div className="">
             {failedStory && (
               <p className="font-bold text-red-800">

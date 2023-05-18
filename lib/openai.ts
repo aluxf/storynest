@@ -74,3 +74,28 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
         
           return stream;
 }
+
+class PromptOptions {
+    storyTypes: { type: string, description: string }[] = [
+        { type: "Godnattsaga", description: "En lugnande berättelse som hjälper barn att somna." },
+        { type: "Äventyr", description: "En spännande resa med utmaningar och överraskningar längs vägen." },
+        { type: "Pedagogisk", description: "En berättelse som syftar till att lära ut något, som moraliska värden eller akademiska kunskaper." },
+        { type: "Däckare", description: "En mysteriumhistoria där karaktärer löser pussel eller brott." },
+        { type: "Science fiction", description: "En berättelse baserad på vetenskapliga spekulationer och framtida teknologier." },
+        { type: "Realistisk fiction", description: "En berättelse som kan hända i verkligheten med vardagliga karaktärer och händelser." }
+      ]
+      
+    readerAges: string[] = [
+        "1-2 år", 
+        "2-3 år", 
+        "3-4 år", 
+        "4-6 år", 
+        "6-8 år", 
+        "8-10 år", 
+        "10-12 år", 
+        "12+ år", 
+        "Vuxen"
+    ];
+}
+
+export const promptOptions = new PromptOptions()
