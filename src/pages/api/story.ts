@@ -48,7 +48,13 @@ const generatePrompt = (storyInput: StoryInput): string => {
 export default async function handler(req: Request, res: Response) {
     //TODO: Validate data
     const body = await req.json()
-    const storyInput = StoryInputSchema.parse(body);
+    let storyInput = null
+    try {
+        storyInput = StoryInputSchema.parse(body);
+    }
+    catch (err) {
+        return new Response(`Bad Request: ${err}`, {status: 400})
+    }
 
     const payload: OpenAIStreamPayload = {
         model: "gpt-3.5-turbo",

@@ -62,11 +62,12 @@ const CreateStory: NextPage = () => {
       body: JSON.stringify({
         text,
         storyType,
-        readerAge,
+        readerAge
       }),
     });
-    if (!response.ok) {
+    if (response.status != 200) {
       setFailedStory(true);
+      return
     }
     setFailedStory(false);
 
