@@ -9,7 +9,7 @@ export const env = createEnv({
   server: {
     //DATABASE_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "test", "production"]),
-    OPENAI_API_KEY: z.string()
+    OPENAI_API_KEY: z.string(),
     //NEXTAUTH_SECRET:
     //  process.env.NODE_ENV === "production"
     //    ? z.string().min(1)
@@ -22,8 +22,9 @@ export const env = createEnv({
     //  process.env.VERCEL ? z.string().min(1) : z.string().url(),
     //),
     //// Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-    //DISCORD_CLIENT_ID: z.string(),
-    //DISCORD_CLIENT_SECRET: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+    JWT_SECRET: z.string()
   },
 
   /**
@@ -42,7 +43,10 @@ export const env = createEnv({
   runtimeEnv: {
     //DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    JWT_SECRET: process.env.JWT_SECRET
     //NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     //NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     //DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
