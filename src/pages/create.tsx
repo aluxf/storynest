@@ -55,8 +55,8 @@ const mdRenderers = {
 
 const CreateStory: NextPage = () => {
   const [text, setText] = useState("");
-  const [storyType, setStoryType] = useState(0);
-  const [readerAge, setReaderAge] = useState(5);
+  const [storyTypeID, setStoryTypeID] = useState(0);
+  const [readerAgeID, setReaderAgeID] = useState(5);
   const [story, setStory] = useState("");
   const [failedStory, setFailedStory] = useState(false);
   const storyRef = useRef<HTMLDivElement>(null)
@@ -88,8 +88,8 @@ const CreateStory: NextPage = () => {
         },
         body: JSON.stringify({
           text,
-          storyType,
-          readerAge
+          storyTypeID,
+          readerAgeID
         }),
         signal // Pass the AbortSignal to the fetch
     });
@@ -159,8 +159,8 @@ const CreateStory: NextPage = () => {
               {" "}
               Inställningar{" "}
             </h2>
-            <SettingSelection title="Berättelsetyp" value={storyType} onChange={setStoryType} options={promptOptions.storyTypes.map((item) => item.type)}/>
-            <SettingSelection title="Läsarens ålder" value={readerAge} onChange={setReaderAge} options={promptOptions.readerAges}/>
+            <SettingSelection title="Berättelsetyp" value={storyTypeID} onChange={setStoryTypeID} options={promptOptions.storyTypes.map((item) => item.type)}/>
+            <SettingSelection title="Läsarens ålder" value={readerAgeID} onChange={setReaderAgeID} options={promptOptions.readerAges}/>
             <div className="">
               {failedStory && (
                 <p className="font-bold text-red-800">

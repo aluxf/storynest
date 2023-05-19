@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { StoryInput } from "lib/types";
-import { OpenAIStream, OpenAIStreamPayload } from "lib/openai";
+import { OpenAIStream, OpenAIStreamPayload, promptTemplate } from "lib/openai";
 import { promptOptions } from "lib/openai";
 
 //https://dev.to/sneakysensei/nextjs-api-routes-global-error-handling-and-clean-code-practices-3g9p
@@ -25,43 +25,40 @@ export const config = {
 
 const StoryInputSchema = z.object({
     text: z.string(),
-    storyType: z.number(),
-    readerAge: z.number()
+    storyTypeID: z.number(),
+    readerAgeID: z.number()
 })
 
 const generatePrompt = (storyInput: StoryInput): string => {
-    const {text, storyType, readerAge} = storyInput
-    const prompt = `
-    Du är en författare som kan skriva kreativa berättelser inom alla genrer och för alla målgrupper. Du MÅSTE följa alla instruktioner.
-    Skriv en berättelse utifrån följande krav:
+    const {text, storyTypeID, readerAgeID} = storyInput
+    const storyType = promptOptions.storyTypes?.[storyTypeID] as {type: string, description:string}
+    const readerAge = promptOptions.readerAges?.[readerAgeID] as string
 
-    1. Den önskade berättelsetypen är "${promptOptions.storyTypes[storyType]?.type}: ${promptOptions.storyTypes[storyType]?.description}"
-    2. Läsaren är ${promptOptions.readerAges[readerAge]}. Snälla se till att innehållet, språket och temat är anpassat för en person i den åldersgruppen.
-    3. Läsaren har specifierat följande som bör inkluderas i berättelsen: "${text}"
-    4. Berättelsen ska vara 3 kapitel och 500 ord lång.
-    5. Skriv berättelsen i markdown. Skriv endast berättelsen, inga sammanfattningar eller liknande.
-    6. Skriv berättelsen så att den är lätt att läsa inför en annan person och undvik korta meningar så att texten är mer flytande.
-    `
-    return prompt
+    return promptTemplate.prompt_1({text, storyType, readerAge})
 }
 
 export default async function handler(req: Request, res: Response) {
     //TODO: Validate data
     const body = await req.json()
     let storyInput = null
+    let prompt = null
     try {
         storyInput = StoryInputSchema.parse(body);
+        prompt = generatePrompt(storyInput)
     }
     catch (err) {
+        console.log(err)
         return new Response(`Bad Request: ${err}`, {status: 400})
     }
 
+
+    console.log(prompt)
     const payload: OpenAIStreamPayload = {
         model: "gpt-3.5-turbo",
         messages: [
             {
                 "role": "user",
-                "content": generatePrompt(storyInput)
+                "content": prompt
             }
         ],
         temperature: 0.3,
