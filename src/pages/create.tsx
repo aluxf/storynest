@@ -119,6 +119,7 @@ const CreateStory: NextPage = () => {
       } catch (error:any) {
         if (error.name === 'AbortError') {
           console.log('Fetch aborted');
+          return;
         } else {
           throw error; // If it's another kind of error, it might be serious so rethrow it
         }
