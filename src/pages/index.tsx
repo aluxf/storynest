@@ -131,7 +131,7 @@ const CreateStory: NextPage = () => {
     <>
       <Head>
         <title>Storynest</title>
-        <meta name="description" content="Storynest" />
+        <meta name="description" content="Skapa personliga berättelser till barnen med hjälp av AI." />
         <link rel="icon" href="/sn_logo_2.png" />
       </Head>
       <main className="flex text-gray-800 min-h-screen min-w-full flex-col items-center justify-center  ">
